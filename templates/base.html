@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}홈{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    {% block extrahead %}{% endblock %}
+
+	<style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        .footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e7e7e7;
+        }
+        .footer .container {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'ticker' %}">실시간 코인 가격 <span class="sr-only">(current)</span></a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'api_key_update' %}">API 키 설정</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'account_info' %}">계좌정보</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'order' %}">주문하기</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'trades' %}">거래내역</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">로그아웃</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">로그인</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">회원가입</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div{% if message.tags %} class="alert {{ message.tags }}" role="alert"{% endif %}>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        <!-- 페이지별 콘텐츠 -->
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span class="text-muted">© 2023 My Site</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extrabody %}{% endblock %}
+</body>
+</html>

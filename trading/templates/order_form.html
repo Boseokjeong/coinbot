@@ -1,0 +1,23 @@
+<!-- trading/templates/order_form.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h1 class="text-center">주문하기</h1>
+          </div>
+          <div class="card-body">
+            <form method="post" class="p-4">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <input type="submit" value="주문 실행" class="btn btn-success btn-block">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

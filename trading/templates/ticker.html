@@ -1,0 +1,78 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+
+{% block title %}실시간 데이터{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Include Financial Chart extension -->
+	<script src="https://unpkg.com/chartjs-chart-financial"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>실시간 비트코인 가격</h2>
+        <div id="price-container" class="alert alert-info">
+            가격을 기다리는 중...
+        </div>
+        <canvas id="price-chart" width="800" height="450"></canvas> <!-- 여기에 캔버스 요소 추가 -->
+    </div>
+{% endblock %}
+
+
+{% block extrabody %}
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', (event) => {
+    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const ws_path = ws_scheme + '://' + window.location.host + "/ws/ticker/";
+    const ws = new WebSocket(ws_path);
+    const ctx = document.getElementById('price-chart').getContext('2d');
+    const priceData = [];
+    const priceChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+		    labels: priceData.map((data) => data.time),
+		    datasets: [{
+		        label: 'BTC 가격',
+		        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+		        borderColor: 'rgba(0, 123, 255, 1)',
+		        data: priceData.map((data) => data.price)
+		    }]
+		},
+		options: {
+		    scales: {
+		        yAxes: [{
+		            ticks: {
+		                beginAtZero: false
+		            }
+		        }]
+		    }
+		}
+    });
+
+	ws.onmessage = function(event) {
+	     const data = JSON.parse(event.data);
+	     const time = new Date().toLocaleTimeString();
+	     document.querySelector('#price-container').innerText = `BTC 가격: ${data.close}`;
+	     priceData.push({time, price: data.close});
+	     priceChart.data.labels.push(time);
+	     priceChart.data.datasets[0].data.push(data.close);
+	     priceChart.update();
+	 };
+
+
+
+    ws.onopen = function() {
+        console.log("WebSocket에 연결됨");
+    };
+
+    ws.onclose = function(e) {
+        console.error('웹소켓이 예상치 않게 닫힘');
+    };
+});
+</script>
+{% endblock %}
+
+

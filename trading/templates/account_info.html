@@ -1,0 +1,52 @@
+<!-- account_info.html -->
+{% extends 'base.html' %}
+
+{% block title %}계좌정보{% endblock %}
+
+
+{% block extrahead %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .account-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        .details {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+        <h1>계좌정보</h1>
+        {% for account in account_info %}
+            <div class="account-info">
+                <p>통화: {{ account.currency }}</p>
+                <p>잔액: {{ account.balance }}</p>
+                <p>현재금액: {{ account.locked }}</p>
+	            <p>매수평균가: {{ account.avg_buy_price }}</p>
+	            <p>매수평균가 수정 여부: {{ account.avg_buy_price_modified }}</p>
+                <div id="details{{ forloop.counter }}" class="details">
+                    <!-- 추가 정보 표시 -->
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+{% endblock %}
