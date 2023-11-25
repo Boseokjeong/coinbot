@@ -1,0 +1,10 @@
+name: coinbot-redis
+app: redis
+options:
+  auth: false
+  disable_flushdb: false
+  disable_flushall: false
+  disable_config: false
+  aof: true
+context:
+  preset: redis

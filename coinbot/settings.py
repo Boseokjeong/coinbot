@@ -79,6 +79,8 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('127.0.0.1', 6379)],  # Redis 서버 주소를 설정하세요
+            # "hosts": [('coinbot-redis', 6379)],  # Redis 서버 주소를 설정하세요
+
         },
     },
 }
