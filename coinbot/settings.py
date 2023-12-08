@@ -27,7 +27,8 @@ SECRET_KEY = Environ.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*', ".cloudtype.app"]
+CSRF_TRUSTED_ORIGINS = ['https://port-0-coinbot-3szcb0g2blpe6krvm.sel5.cloudtype.app']
 
 
 # Application definition
@@ -41,16 +42,26 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "trading",
     "channels",
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+# CORS 허용된 출처
+CORS_ALLOWED_ORIGINS = [
+    "https://port-0-coinbot-3szcb0g2blpe6krvm.sel5.cloudtype.app",
+    "https://sub.example.app",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000",
 ]
 
 ROOT_URLCONF = "coinbot.urls"
@@ -78,8 +89,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],  # Redis 서버 주소를 설정하세요
-            # "hosts": [('coinbot-redis', 6379)],  # Redis 서버 주소를 설정하세요
+            # "hosts": [('127.0.0.1', 6379)],  # Redis 서버 주소를 설정하세요
+            "hosts": [(Environ.REDIS_HOST, Environ.REDIS_PORT)],  # Redis 서버 주소를 설정하세요
 
         },
     },
@@ -146,4 +157,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGOUT_REDIRECT_URL = 'login/'
 LOGIN_REDIRECT_URL = '/'
-
