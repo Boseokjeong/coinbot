@@ -15,3 +15,6 @@ class Environ:
     DB_PORT = int(os.environ.get('DB_PORT', 3306))
     DB_NAME = os.environ.get('DB_NAME')
 
+    REDIS_HOST = os.environ.get('REDIS_HOST')
+    REDIS_PORT = os.environ.get('REDIS_PORT')
+
