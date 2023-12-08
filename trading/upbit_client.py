@@ -7,6 +7,8 @@ import logging
 from requests.exceptions import RequestException
 import websocket
 import json
+import hashlib
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +29,15 @@ class UpbitAuth(AuthBase):
             # 'query': ...  # 필요한 경우, 쿼리 파라미터를 포함시켜야 할 수도 있습니다.
         }
 
+        if r.body:
+            m = hashlib.sha512()
+            m.update(r.body)  # r.body가 이미 바이트 형식이므로 encode()는 필요 없습니다.
+            query_hash = m.hexdigest()
+            payload['query_hash'] = query_hash
+            payload['query_hash_alg'] = 'SHA512'
+
         # JWT 토큰을 생성합니다.
         jwt_token = jwt.encode(payload, self.secret_key)
-
         # Authorization 헤더에 JWT 토큰을 포함시킵니다.
         r.headers['Authorization'] = f'Bearer {jwt_token}'
         return r
@@ -55,10 +63,12 @@ class UpbitClient:
             data = {
                 'market': market,  # 예: 'KRW-BTC'
                 'side': order_type,  # 'buy' 또는 'sell'
-                'volume': volume,  # 주문 수량
-                'price': price,  # 주문 가격
                 'ord_type': ord_type,  # 주문 유형 ('limit'은 지정가 주문)
+                'price': price,  # 주문 가격
+                'volume': volume,  # 주문 수량
             }
+            print(url)
+            print(data)
             response = requests.post(url, auth=self.auth, json=data)
             response.raise_for_status()  # 200 OK 코드가 아닌 경우에 예외를 발생시킵니다.
             return response.json()  # 업비트 API 응답을 반환합니다.

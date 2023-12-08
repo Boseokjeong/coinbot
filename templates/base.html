@@ -41,12 +41,14 @@
                         <a class="nav-link" href="{% url 'ticker' %}">실시간 코인 가격 <span class="sr-only">(current)</span></a>
                     </li>
                     {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'search' %}">코인조회</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'api_key_update' %}">API 키 설정</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'account_info' %}">계좌정보</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'order' %}">주문하기</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'trades' %}">거래내역</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">로그아웃</a></li>
                     {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'search' %}">코인조회</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">로그인</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">회원가입</a></li>
                     {% endif %}

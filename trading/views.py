@@ -10,6 +10,12 @@ from .forms import UpbitAPIKeyForm
 from .upbit_client import UpbitClient
 from .models import UserProfile
 from .forms import OrderForm
+import requests
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
+
+
+
 
 def ticker_view(request):
     return render(request, 'ticker.html')
@@ -19,7 +25,6 @@ def ticker_view(request):
 def trade_view(request):
     trades = Trade.objects.filter(account__user=request.user).order_by('-reg_dtm')
     return render(request, 'trades.html', {'trades': trades})
-
 
 
 class SignUpView(CreateView):
@@ -44,8 +49,42 @@ def account_info_view(request):
     user_profile = UserProfile.objects.get(user=request.user)
     client = UpbitClient(user_profile.upbit_api_key, user_profile.upbit_secret_key)
     account_info = client.get_account_info()
+    print(account_info)
     return render(request, 'account_info.html', {'account_info': account_info})
 
+
+def search_view(request):
+    url = "https://api.upbit.com/v1/market/all?isDetails=false"
+    headers = {"accept": "application/json"}
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    search_query = request.GET.get('q')
+    if search_query:
+        data = [market for market in data if
+                search_query.lower() in market.get('korean_name', '').lower() or
+                search_query.lower() in market.get('english_name', '').lower()]
+
+    # 페이징 처리
+    paginator = Paginator(data, 10)  # 페이지당 10개 항목
+    page = request.GET.get('page', 1)
+    try:
+        markets = paginator.page(page)
+    except PageNotAnInteger:
+        markets = paginator.page(1)
+    except EmptyPage:
+        markets = paginator.page(paginator.num_pages)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # 필터링된 데이터를 JSON 형식으로 반환
+        return JsonResponse({
+            'markets': list(markets),  # 검색된 결과가 담긴 리스트
+            'page': page,
+            'num_pages': paginator.num_pages
+        }, safe=False)
+
+        # 일반 요청의 경우
+    return render(request, 'search.html', {'markets': markets})
 
 @login_required
 def order_view(request):
@@ -59,8 +98,10 @@ def order_view(request):
             order_type = form.cleaned_data['order_type']
             volume = form.cleaned_data['volume']
             price = form.cleaned_data['price']
+            order_div = form.cleaned_data['order_div']
 
-            result = client.place_order(market, order_type, volume, price)
+            result = client.place_order(market, order_type, volume, price, order_div)
+
             if result and result.get('error') is None:
                 # 주문 성공 처리
                 return redirect('order_success')

@@ -18,7 +18,8 @@ class UpbitAPIKeyForm(forms.ModelForm):
 
 
 class OrderForm(forms.Form):
-    order_type = forms.ChoiceField(choices=[('buy', '매수'), ('sell', '매도')])
-    market = forms.CharField(max_length=10)
-    volume = forms.DecimalField(max_digits=15, decimal_places=8)
-    price = forms.DecimalField(max_digits=15, decimal_places=8)
+    order_type = forms.ChoiceField(choices=[('bid', '매수'), ('ask', '매도')], label='주문 종류')
+    order_div = forms.ChoiceField(choices=[('limit','지정가'),('price','시장가(매수)'),('market','시장가(매도)')], label='주문 타입')
+    market = forms.CharField(max_length=10, label='코인심볼', help_text='예시: KRW-BTC')
+    volume = forms.CharField(max_length=20, label='주문량')
+    price = forms.CharField(max_length=20, label='주문가격')

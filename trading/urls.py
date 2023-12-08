@@ -1,7 +1,9 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from .views import (trade_view, SignUpView,
-                    UpbitAPIKeyUpdateView, ticker_view, account_info_view, order_view)
+                    UpbitAPIKeyUpdateView, ticker_view,
+                    account_info_view, order_view,
+                    search_view)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView
@@ -17,7 +19,7 @@ urlpatterns = [
     path('api-key/', UpbitAPIKeyUpdateView.as_view(), name='api_key_update'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('order/', order_view, name='order'),
+    path('search/', search_view, name='search'),
     path('order/success/', TemplateView.as_view(template_name='order_success.html'), name='order_success'),
     path('order/fail/', TemplateView.as_view(template_name='order_fail.html'),name='order_fail'),
-
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
