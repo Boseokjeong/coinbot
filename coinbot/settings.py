@@ -27,7 +27,7 @@ SECRET_KEY = Environ.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', ".cloudtype.app"]
+ALLOWED_HOSTS = ['*', "port-0-coinbot-3szcb0g2blpe6krvm.sel5.cloudtype.app",".cloudtype.app"]
 CSRF_TRUSTED_ORIGINS = ['https://port-0-coinbot-3szcb0g2blpe6krvm.sel5.cloudtype.app']
 
 
@@ -61,7 +61,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://port-0-coinbot-3szcb0g2blpe6krvm.sel5.cloudtype.app",
     "https://sub.example.app",
     "http://localhost:8080",
-    "http://127.0.0.1:9000",
+    "http://127.0.0.1:8000",
+    "http://0.0.0.0:8000"
 ]
 
 ROOT_URLCONF = "coinbot.urls"
