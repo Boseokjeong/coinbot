@@ -67,6 +67,7 @@ class UpbitClient:
                 'price': price,  # 주문 가격
                 'volume': volume,  # 주문 수량
             }
+            # 이 부분 다시 봐야함
             print(url)
             print(data)
             response = requests.post(url, auth=self.auth, json=data)
