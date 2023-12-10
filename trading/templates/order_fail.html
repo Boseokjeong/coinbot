@@ -10,6 +10,7 @@
             <h1 class="text-center">주문 실패</h1>
           </div>
           <div class="card-body text-center">
+            <p class="mt-4">{{ error_message }}</p>
             <p class="mt-4">주문이 실패되었습니다. 다시 시도해 주세요.</p>
             <a href="{% url 'order' %}" class="btn btn-danger">다시 시도</a>
           </div>

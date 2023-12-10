@@ -1,0 +1,114 @@
+<!-- order_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}주문 조회{% endblock %}
+
+{% block extrahead %}
+	<style>
+		/* 주문 조회 테이블 스타일링 */
+.order-list {
+    margin-top: 20px;
+}
+
+.order-list h2 {
+    margin-bottom: 15px;
+}
+
+   .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-sm th, .table-sm td {
+        padding: 0.3rem;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0,0,0,.05);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.075);
+    }
+	</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-list">
+    <h2>주문 조회</h2>
+
+	<!-- 검색 폼 -->
+	<form method="post" action="{% url 'order_list' %}">
+	    {% csrf_token %}
+		<div class="form-group">
+		        <label for="coin">코인 선택:</label>
+		        <input type="text" class="form-control" id="coin" name="coin" value="{{ selected_coin }}" placeholder="예: KRW-BTC">
+	    </div>
+	    <div class="form-group">
+	        <label for="state">주문 상태:</label>
+	        <select class="form-control" id="state" name="state">
+		        <option value="wait" {% if selected_state == 'wait' %}selected{% endif %}>체결 대기</option>
+		        <option value="watch" {% if selected_state == 'watch' %}selected{% endif %}>예약주문 대기</option>
+		        <option value="done" {% if selected_state == 'done' %}selected{% endif %}>전체 체결 완료</option>
+		        <option value="cancel" {% if selected_state == 'cancel' %}selected{% endif %}>주문 취소</option>
+	        </select>
+	    </div>
+        <button type="submit" class="btn btn-primary">검색</button>
+	</form>
+
+    <!-- 주문 조회 내용 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>주문 번호</th>
+                <th>코인명</th>
+	            <th>주문 구분</th>
+                <th>주문 유형</th>
+                <th>주문량</th>
+                <th>주문 가격</th>
+                <th>주문 상태</th>
+                <th>주문 시간</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 주문 데이터 반복 -->
+            {% for order in orderss %}
+            <tr>
+                <td>{{ order.uuid }}</td>
+                <td>{{ order.market }}</td>
+                <td>{{ order.side }}</td>
+	            <td>{{ order.ord_type }}</td>
+                <td>{{ order.volume }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.state }}</td>
+                <td>{{ order.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+

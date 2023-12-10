@@ -13,7 +13,7 @@ from .forms import OrderForm
 import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
-
+import pyupbit
 
 
 
@@ -49,7 +49,6 @@ def account_info_view(request):
     user_profile = UserProfile.objects.get(user=request.user)
     client = UpbitClient(user_profile.upbit_api_key, user_profile.upbit_secret_key)
     account_info = client.get_account_info()
-    print(account_info)
     return render(request, 'account_info.html', {'account_info': account_info})
 
 
@@ -89,7 +88,7 @@ def search_view(request):
 @login_required
 def order_view(request):
     user_profile = UserProfile.objects.get(user=request.user)
-    client = UpbitClient(user_profile.upbit_api_key, user_profile.upbit_secret_key)
+    client = pyupbit.Upbit(user_profile.upbit_api_key, user_profile.upbit_secret_key)
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -100,15 +99,73 @@ def order_view(request):
             price = form.cleaned_data['price']
             order_div = form.cleaned_data['order_div']
 
-            result = client.place_order(market, order_type, volume, price, order_div)
-
-            if result and result.get('error') is None:
-                # 주문 성공 처리
-                return redirect('order_success')
-            else:
-                # 주문 실패 처리
-                return redirect('order_fail')
+            if order_type == 'bid':
+                if order_div == 'limit':
+                    result, error_message = client.buy_limit_order(market, price, volume)
+                    if result is not None:
+                        # 주문 성공 처리
+                        return redirect('order_success')
+                    else:
+                        # 주문 실패 처리
+                        return render(request, 'order_fail.html', {'error_message': error_message})
     else:
         form = OrderForm()
 
     return render(request, 'order_form.html', {'form': form})
+
+
+@login_required
+def order_view(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    client = pyupbit.Upbit(user_profile.upbit_api_key, user_profile.upbit_secret_key)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            market = form.cleaned_data['market']
+            order_type = form.cleaned_data['order_type']
+            volume = form.cleaned_data['volume']
+            price = form.cleaned_data['price']
+            order_div = form.cleaned_data['order_div']
+
+            if order_type == 'bid':
+                if order_div == 'limit':
+                    result, error_message = client.buy_limit_order(market, price, volume)
+                    if result is not None:
+                        # 주문 성공 처리
+                        return redirect('order_success')
+                    else:
+                        # 주문 실패 처리
+                        return render(request, 'order_fail.html', {'error_message': error_message})
+    else:
+        form = OrderForm()
+
+    return render(request, 'order_form.html', {'form': form})
+
+@login_required
+def order_list_view(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    client = pyupbit.Upbit(user_profile.upbit_api_key, user_profile.upbit_secret_key)
+
+    if request.method == 'POST':
+        print(request.POST)
+        coin = request.POST.get('coin', 'KRW-BTC')
+        state = request.POST.get('state', 'wait')
+    else:
+        coin = 'KRW-BTC'
+        state = 'wait'
+
+    orders = client.get_order(coin, state=state) if coin else []
+
+    context = {
+        'orderss': orders,  # 현재 페이지의 주문
+        'selected_coin': coin,  # 선택된 코인
+        'selected_state': state  # 선택된 주문 상태
+    }
+
+    # 일반 요청의 경우
+    return render(request, 'order_list.html', context)
+
+
+
+
