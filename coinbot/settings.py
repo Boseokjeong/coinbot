@@ -90,8 +90,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            # "hosts": [('127.0.0.1', 6379)],  # Redis 서버 주소를 설정하세요
-            "hosts": [(Environ.REDIS_HOST, Environ.REDIS_PORT)],  # Redis 서버 주소를 설정하세요
+            "hosts": [('127.0.0.1', 6379)],  # Redis 서버 주소를 설정하세요
+            # "hosts": [(Environ.REDIS_HOST, Environ.REDIS_PORT)],  # Redis 서버 주소를 설정하세요
 
         },
     },

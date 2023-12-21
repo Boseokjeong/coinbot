@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from .views import (trade_view, SignUpView,
                     UpbitAPIKeyUpdateView, ticker_view,
                     account_info_view, order_view, order_list_view,
-                    search_view)
+                    search_view, manage_view)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView
@@ -23,4 +23,5 @@ urlpatterns = [
     path('search/', search_view, name='search'),
     path('order/success/', TemplateView.as_view(template_name='order_success.html'), name='order_success'),
     path('order/fail/', TemplateView.as_view(template_name='order_fail.html'),name='order_fail'),
+    path('manage/', manage_view, name='manage'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

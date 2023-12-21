@@ -1,0 +1,32 @@
+<!-- order_success.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+	모델 관리
+{% endblock %}
+
+
+{% block content %}
+	<button id="startButton">모델 시작</button>
+    <button id="stopButton">모델 중지</button>
+
+	<div id="data-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in df %}
+                    <tr>
+                        <td>{{ row }}</td>
+                        <td>{{ row }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

@@ -14,7 +14,7 @@ import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 import pyupbit
-
+from trading.gpt4 import load_and_predict
 
 
 def ticker_view(request):
@@ -85,34 +85,6 @@ def search_view(request):
         # 일반 요청의 경우
     return render(request, 'search.html', {'markets': markets})
 
-@login_required
-def order_view(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-    client = pyupbit.Upbit(user_profile.upbit_api_key, user_profile.upbit_secret_key)
-
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            market = form.cleaned_data['market']
-            order_type = form.cleaned_data['order_type']
-            volume = form.cleaned_data['volume']
-            price = form.cleaned_data['price']
-            order_div = form.cleaned_data['order_div']
-
-            if order_type == 'bid':
-                if order_div == 'limit':
-                    result, error_message = client.buy_limit_order(market, price, volume)
-                    if result is not None:
-                        # 주문 성공 처리
-                        return redirect('order_success')
-                    else:
-                        # 주문 실패 처리
-                        return render(request, 'order_fail.html', {'error_message': error_message})
-    else:
-        form = OrderForm()
-
-    return render(request, 'order_form.html', {'form': form})
-
 
 @login_required
 def order_view(request):
@@ -141,6 +113,36 @@ def order_view(request):
         form = OrderForm()
 
     return render(request, 'order_form.html', {'form': form})
+
+
+@login_required
+def order_view(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    client = pyupbit.Upbit(user_profile.upbit_api_key, user_profile.upbit_secret_key)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            market = form.cleaned_data['market']
+            order_type = form.cleaned_data['order_type']
+            volume = form.cleaned_data['volume']
+            price = form.cleaned_data['price']
+            order_div = form.cleaned_data['order_div']
+
+            if order_type == 'bid':
+                if order_div == 'limit':
+                    result, error_message = client.buy_limit_order(market, price, volume)
+                    if result is not None:
+                        # 주문 성공 처리
+                        return redirect('order_success')
+                    else:
+                        # 주문 실패 처리
+                        return render(request, 'order_fail.html', {'error_message': error_message})
+    else:
+        form = OrderForm()
+
+    return render(request, 'order_form.html', {'form': form})
+
 
 @login_required
 def order_list_view(request):
@@ -165,6 +167,23 @@ def order_list_view(request):
 
     # 일반 요청의 경우
     return render(request, 'order_list.html', context)
+
+
+@login_required
+def manage_view(request):
+
+    ticker = "KRW-BTC"
+    df = pyupbit.get_ohlcv(ticker, interval="minute1", count=1000)
+    new_df = df[['close']].rename(columns={'close': 'price'})
+    new_df['date'] = df.index
+    # after_price = load_and_predict(new_df[['price']])
+    # print("-------------")
+    # print(after_price[0][0], new_df['date'].iloc[-1] + pd.Timedelta(minutes=1))
+
+    if request.method == 'POST':
+        pass
+
+    return render(request, 'manage.html', context={'df': new_df.iloc[-1].tolist()})
 
 
 

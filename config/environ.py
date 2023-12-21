@@ -18,3 +18,6 @@ class Environ:
     REDIS_HOST = os.environ.get('REDIS_HOST')
     REDIS_PORT = os.environ.get('REDIS_PORT')
 
+    UPBIT_ACCESS_KEY = os.environ.get('UPBIT_ACCESS_KEY')
+    UPBIT_SECRET_KEY = os.environ.get('UPBIT_SECRET_KEY')
+
