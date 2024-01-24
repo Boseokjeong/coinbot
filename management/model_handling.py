@@ -53,6 +53,7 @@ if __name__ == '__main__':
     # 스레드 리스트 생성
     threads = []
 
+    print("모델 실행")
     t1 = threading.Thread(target=run_model,
                           args=("minute1", '/Users/seok/Documents/coinbot/management/data/minute1_model.tf'))
     threads.append(t1)
