@@ -7,6 +7,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+import subprocess
+import os
 
 
 class CoinModel:
@@ -99,6 +101,18 @@ class CoinModel:
 
         return [predicted_prices, actual_prices]
 
+    def upload_to_github(self, file_path, message, repository_path):
+        try:
+            # 저장소 디렉토리로 변경
+            os.chdir(repository_path)
+
+            # Git 명령어 실행
+            subprocess.check_call(['git', 'add', file_path])
+            subprocess.check_call(['git', 'commit', '-m', message])
+            subprocess.check_call(['git', 'push'])
+        except subprocess.CalledProcessError as e:
+            print(f"Git 명령어 실행 중 에러 발생: {e}")
+
     def create_graph(self, predicted_prices, actual_prices, graph_name):
         # Plotting actual vs predicted prices
         plt.figure(figsize=(12, 6))
@@ -114,8 +128,20 @@ class CoinModel:
 
 
 if __name__ == '__main__':
-    interval_time = "minute5"
+    print("1분 모델 생성 시작")
+    interval_time = "minute1"
     bitcoin = CoinModel("KRW-BTC", interval_time)
     minute_data = bitcoin.get_price_data()
-    minute_model = bitcoin.create_model(minute_data, f"{interval_time}_model")
-    # bitcoin.create_graph(minute_model[0], minute_model[1], f"{interval_time}_model")
+    if minute_data is not None:
+        minute_model = bitcoin.create_model(minute_data, f"{interval_time}_model")
+        # bitcoin.create_graph(minute_model[0], minute_model[1], f"{interval_time}_model")
+        print("1분 모델 생성 완료")
+
+        # 모델 파일 경로, 커밋 메시지 및 저장소 경로 설정
+        file_path = f'/Users/seok/Documents/coinbot/management/data/{interval_time}_model.tf'
+        message = 'Daily model update'
+        repository_path = '/Users/seok/Documents/coinbot'
+
+        # GitHub에 업로드
+        bitcoin.upload_to_github(file_path, message, repository_path)
+        print("GitHub 업로드 완료")
