@@ -17,7 +17,7 @@ class CoinModel:
     def get_price_data(self):
         # 데이터 가져오기
         try:
-            df = pyupbit.get_ohlcv(self.ticker, interval=self.interval, count=10001)
+            df = pyupbit.get_ohlcv(self.ticker, interval=self.interval, count=100001)
 
             # 데이터 유효성 검사
             if df is None or df.empty:
@@ -29,7 +29,7 @@ class CoinModel:
             new_df = new_df.sort_index(ascending=False)
             indexes = ['price']
 
-            selected_df = new_df.iloc[:10000][indexes].reset_index(drop=True)
+            selected_df = new_df.iloc[:100000][indexes].reset_index(drop=True)
             return selected_df
         except Exception as e:
             print(f"Error in get_price_data: {e}")
